@@ -2,6 +2,10 @@ class RBTree {
     public Node root;
     public static Node nil = new Node(0, false);
 
+    public RBTree() {
+        this.root = RBTree.nil;
+    }
+    
     public RBTree(int value) {
         this.root = new Node(value, false);
     }
@@ -9,49 +13,57 @@ class RBTree {
     public Node find(int value) {
         return this.root.find(value);
     }
+	
+	public RBTree find50(int nb) {
+        Counter c = new Counter(0);
+        RBTree t50 = new RBTree();
+
+        this.root.find50(c, nb, t50);
+
+        return t50;
+    }
 
     public void insert(int value) {
-        Node n = this.find(value);
-        if (value < n.value) {
-            n.left = new Node(value, true);
-            n.left.p = n;
-            this.insertFixup(n.left);
+		if (this.root == RBTree.nil) {
+            this.root = new Node(value, false);
         }
-        else if (value > n.value) {
-            n.right = new Node(value, true);
-            n.right.p = n;
-            this.insertFixup(n.right);
-        }
-    }
+			else {
+			Node n = this.find(value);
+			if (value < n.value) {
+				n.left = new Node(value, true);
+				n.left.p = n;
+				this.insertFixup(n.left);
+			}
+			else if (value > n.value) {
+				n.right = new Node(value, true);
+				n.right.p = n;
+				this.insertFixup(n.right);
+			}
+		}
+	}
 
     private void insertFixup(Node z) {
         Node y;
-        while (z.p.color_red) {
-            if (z.p == z.p.p.left) {
-                y = z.p.p.right;
-                if (y.color_red) { // case 1: while repeats only if y.color_red
-                    /* if my uncle is red, I change the color
-                     * of my parent and uncle to black and
-                     * my grandparent's color to red
-                     * then, go up 2 levels on the tree
-                     */
-                    z.p.color_red = false;
-                    y.color_red = false;
-                    z.p.p.color_red = true;
-                    z = z.p.p;
+        while (z.p.color_red) { // while my father is red...
+            if (z.p == z.p.p.left) { // if my father is the left child of my grandfather...
+                y = z.p.p.right; // my uncle will be the right child of my granfather;
+                if (y.color_red) { // case 1: while repeats only if y.color_red; if my uncle is red:
+                    z.p.color_red = y.color_red = false; // my father and uncle become black;
+                    z.p.p.color_red = true; // my grandfather become red;
+                    z = z.p.p; // I go up 2 levels on the tree;
                 }
-                else { // uncle is black
-                    if (z == z.p.right) { // case 2
-                        z = z.p;
-                        this.leftRotate(z);
+                else { // uncle is black:
+                    if (z == z.p.right) { // case 2: if I am the righ child of my father:
+                        z = z.p; // I go up 1 level on the tree;
+                        this.leftRotate(z); // then I perform a left rotation;
                     }
-                    // case 3
-                    z.p.color_red = false;
-                    z.p.p.color_red = true;
-                    this.rightRotate(z.p.p);
+                    // case 3:
+                    z.p.color_red = false; // my father become black;
+                    z.p.p.color_red = true; // my grandfather become red;
+                    this.rightRotate(z.p.p); // my grandfather perform a right rotation;
                 }
             }
-            else {
+            else { // if my father is the right child of my grandfather... repeat the code above changing right/left;
                 y = z.p.p.left;
                 if (y.color_red) { // case 1
                     y.color_red = z.p.color_red = false;
@@ -76,15 +88,15 @@ class RBTree {
     private void leftRotate(Node x) {
         Node y = x.right;
 
-        x.right = y.left;
-        if (y.left != RBTree.nil) y.left.p = x;
-        y.p = x.p;
+        x.right = y.left; // set y
+        if (y.left != RBTree.nil) y.left.p = x; // turn y's left subtree into x's right subtree
+        y.p = x.p; // link x's parent to y
 
         if (x.p == RBTree.nil) this.root = y;
         else if (x == x.p.left) x.p.left = y;
         else x.p.right = y;
 
-        y.left = x;
+        y.left = x; // put x on y's left
         x.p = y;
     }
 
@@ -106,7 +118,7 @@ class RBTree {
     public void remove(int value) {
         Node z = this.find(value);
         Node x, y = z;
-        boolean yOriginalRed = y.color_red;
+        boolean yOriginalcolor_red = y.color_red;
 
         if (z.left == RBTree.nil) {
             x = z.right;
@@ -118,7 +130,7 @@ class RBTree {
         }
         else {
             y = z.successor();
-            yOriginalRed = y.color_red;
+            yOriginalcolor_red = y.color_red;
             x = y.right;
 
             if (y.p == z) x.p = y;
@@ -133,14 +145,9 @@ class RBTree {
             y.color_red = z.color_red;
         }
 
-        if (!yOriginalRed) this.remFix(x);
+        if (!yOriginalcolor_red) this.removeFixup(x);
     }
 
-    /* Adjusts v's references to match u's:
-     * u.p.x = v and v.p = u.p (if v is not RBTree.nil).
-     * Doesn't touch u.p, u.left and u.right. u is
-     * still there as though nothing happened.
-     */
     private void transplant(Node u, Node v) {
         if (u.p == RBTree.nil) this.root = v;
         else if (u == u.p.left) u.p.left = v;
@@ -148,31 +155,31 @@ class RBTree {
         v.p = u.p;
     }
 
-    private void remFix(Node x) {
-        Node w;
+    private void removeFixup(Node x) {
+        Node w; // w is my sibling
 
         while (x != this.root && !x.color_red) {
-            if (x == x.p.left) {
-                w = x.p.right;
+            if (x == x.p.left) { // if I am the left child of my father
+                w = x.p.right; // my sibling will be the right child
 
-                if (w.color_red) { // case 1
+                if (w.color_red) { // case 1: x's sibling is red
                     w.color_red = false;
                     x.p.color_red = true;
                     this.leftRotate(x.p);
                     w = x.p.right;
                 }
-                if (!w.left.color_red && !w.right.color_red) { // case 2
+                if (!w.left.color_red && !w.right.color_red) { // case 2: my sibling and nephews are black
                     w.color_red = true;
                     x = x.p;
                 }
                 else {
-                    if (!w.right.color_red) { // case 3
+                    if (!w.right.color_red) { // case 3: my sibling and right nephew are black, but my left nephew is red
                         w.left.color_red = false;
                         w.color_red = true;
                         this.rightRotate(w);
                         w = x.p.right;
                     }
-                    // case 4
+                    // case 4: my sibling is black and my right nephew is red
                     w.color_red = x.p.color_red;
                     x.p.color_red = false;
                     w.right.color_red = false;
@@ -189,7 +196,7 @@ class RBTree {
                     this.rightRotate(x.p);
                     w = x.p.left;
                 }
-                if (!w.left.color_red && !w.right.color_red) { // case 2
+                if (!w.right.color_red && !w.left.color_red) { // case 2
                     w.color_red = true;
                     x = x.p;
                 }
@@ -209,16 +216,7 @@ class RBTree {
                 }
             }
         }
-        x.color_red = false;
-    }
-
-    // Remove all nodes in the tree.
-    public RBTree delete() {
-        while (this.root != RBTree.nil) {
-            this.remove(this.root.value);
-        }
-        this.root = null;
-        return null;
+        x.color_red = false; // x color now is black
     }
 
     public Node minimum() {
@@ -232,12 +230,17 @@ class RBTree {
     public void inorderWalk() {
         this.root.inorderWalk();
     }
+    
+	public Node search(int k){
+        Node aux = root.find(k);
+        if(aux.value != k) return null;
+        else return aux;
+    }
 
     public void graph() {
         System.out.println("digraph RBTree {");
         this.root.graph();
         System.out.println("\tnil [style = filled, fillcolor = black, fontcolor = white];");
-        //System.out.println("\tnil -> " + this.root.value + ";");
         System.out.println("}");
     }
 }
