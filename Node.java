@@ -1,4 +1,3 @@
-
 class Node {
     public int value;
     public boolean color_red;
@@ -15,6 +14,23 @@ class Node {
         else if (value > this.value && this.right != RBTree.nil) return this.right.find(value);
         else return this;
     }
+    
+    public void find50(Counter qtty, int nb, RBTree result) {
+        if (qtty.getValue() >= 50) return;
+
+        if (this.left != RBTree.nil) {
+            this.left.find50(qtty, nb, result);
+        }
+
+        if (this.value > nb && qtty.getValue() < 50) {
+            result.insert(this.value);
+            qtty.increment();
+        }
+
+        if (this.right != RBTree.nil) {
+            this.right.find50(qtty, nb, result);
+        }
+    }
 
     public Node minimum() {
         if (this.left != RBTree.nil) return this.left.minimum();
@@ -26,6 +42,11 @@ class Node {
         else return this;
     }
 
+    public Node successor() {
+        if (this.right != RBTree.nil) return this.right.minimum();
+        else return this;
+    }
+
     public void inorderWalk() {
         if (this.left != RBTree.nil) this.left.inorderWalk();
         System.out.println(this.value);
@@ -33,7 +54,7 @@ class Node {
     }
 
     public void graph() {
-        if (this.color_red) { // coloring
+        if (this.color_red) {
             System.out.println("\t" + this.value + " [style = filled, fillcolor = red];");
         } else {
             System.out.println("\t" + this.value + " [style = filled, fillcolor = black, fontcolor = white];");
