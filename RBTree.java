@@ -5,7 +5,7 @@ class RBTree {
     public RBTree() {
         this.root = RBTree.nil;
     }
-    
+
     public RBTree(int value) {
         this.root = new Node(value, false);
     }
@@ -13,12 +13,12 @@ class RBTree {
     public Node find(int value) {
         return this.root.find(value);
     }
-	
-	public RBTree find50(int nb) {
+
+	public RBTree find50(int first) {
         Counter c = new Counter(0);
         RBTree t50 = new RBTree();
 
-        this.root.find50(c, nb, t50);
+        this.root.find50(c, first, t50);
 
         return t50;
     }
@@ -219,6 +219,15 @@ class RBTree {
         x.color_red = false; // x color now is black
     }
 
+    // Remove all nodes in the tree.
+    public RBTree delete() {
+        while (this.root != RBTree.nil) {
+            this.remove(this.root.value);
+        }
+        this.root = null;
+        return null;
+    }
+
     public Node minimum() {
         return this.root.minimum();
     }
@@ -230,7 +239,7 @@ class RBTree {
     public void inorderWalk() {
         this.root.inorderWalk();
     }
-    
+
 	public Node search(int k){
         Node aux = root.find(k);
         if(aux.value != k) return null;

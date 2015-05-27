@@ -1,6 +1,6 @@
 class Node {
     public int value;
-    public boolean color_red;
+    public boolean color_red; // if the node is red "color_red" is true; else is false;
     public Node p, left, right;
 
     public Node(int value, boolean color_red) {
@@ -14,21 +14,21 @@ class Node {
         else if (value > this.value && this.right != RBTree.nil) return this.right.find(value);
         else return this;
     }
-    
-    public void find50(Counter qtty, int nb, RBTree result) {
-        if (qtty.getValue() >= 50) return;
+
+    public void find50(Counter c, int first, RBTree result) {
+        if (c.getValue() >= 50) return;
 
         if (this.left != RBTree.nil) {
-            this.left.find50(qtty, nb, result);
+            this.left.find50(c, first, result);
         }
 
-        if (this.value > nb && qtty.getValue() < 50) {
+        if (this.value > first && c.getValue() < 50) {
             result.insert(this.value);
-            qtty.increment();
+            c.increment();
         }
 
         if (this.right != RBTree.nil) {
-            this.right.find50(qtty, nb, result);
+            this.right.find50(c, first, result);
         }
     }
 
@@ -42,7 +42,7 @@ class Node {
         else return this;
     }
 
-    public Node successor() {
+    public Node successor() { // used in remotion
         if (this.right != RBTree.nil) return this.right.minimum();
         else return this;
     }
