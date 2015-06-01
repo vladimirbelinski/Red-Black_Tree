@@ -4,6 +4,7 @@ class Main{
 
 	public static final int QTY = 50; //200000
 	public static final int  SEARCH = 10; //10000
+	public static final int GEN = 1000;
 	public static int d; // used in a forced remotion;
 
     public static void main(String args[]){
@@ -17,22 +18,23 @@ class Main{
 //-------------------------------- INSERTION -----------------------------------------------------------------
         for(int i = 0; i < QTY; i++){
 			aux = System.nanoTime();
-			int j = generator.nextInt(1000);
+			int j = generator.nextInt(GEN);
 			t.insert(j);
 			//System.out.println(j); // used to print the value keys in the order they are inserted
+			//t.insert(i); // used to insert sequentially (interesting for a sequential remotion)
 			uma = System.nanoTime() - aux;
 			media_i += System.nanoTime() - aux;
 
-			if (i==0) d = j; // used in a forced remotion;
+			//if (i==0) d = j; // used in a forced remotion;
 		}
 
-        //end = System.nanoTime()-start; // I find the end before because System.out.printf also has a time that influenciates...
+        end = System.nanoTime()-start; // I find the end before because System.out.printf also has a time that influenciates...
 		media_i /= QTY;
 
 //------------------------------- SEARCH ---------------------------------------------------------------------
 		for(int i = 0; i < SEARCH; i++){
 			aux = System.nanoTime();
-			t.search(generator.nextInt(2147483647));
+			t.search(generator.nextInt(GEN));
 			media_s += System.nanoTime() - aux;
 		}
 
@@ -44,7 +46,12 @@ class Main{
 //-------------------------------- REMOTION ------------------------------------------------------------------
 		//t.remove(d); // removes a forced element; 'd' can be replaced for a number
 		//t = t.delete(); // Full deletion of the Red-Black Tree
-
+		
+		// used in a sequential remotion:
+		/*for(int i = 0; i < QTY; i++){
+			t.remove(t.search(i).value);
+		}*/
+		
 		t.graph();
 
         total = System.nanoTime() - start;
