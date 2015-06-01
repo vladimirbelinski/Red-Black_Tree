@@ -117,36 +117,38 @@ class RBTree {
 
     public void remove(int value) {
         Node z = this.find(value);
-        Node x, y = z;
-        boolean yOriginalcolor_red = y.color_red;
+		if (z.value == value){
+			Node x, y = z;
+			boolean yOriginalcolor_red = y.color_red;
 
-        if (z.left == RBTree.nil) {
-            x = z.right;
-            this.transplant(z, z.right);
-        }
-        else if (z.right == RBTree.nil) {
-            x = z.left;
-            this.transplant(z, z.left);
-        }
-        else {
-            y = z.successor();
-            yOriginalcolor_red = y.color_red;
-            x = y.right;
+			if (z.left == RBTree.nil) {
+				x = z.right;
+				this.transplant(z, z.right);
+			}
+			else if (z.right == RBTree.nil) {
+				x = z.left;
+				this.transplant(z, z.left);
+			}
+			else {
+				y = z.successor();
+				yOriginalcolor_red = y.color_red;
+				x = y.right;
 
-            if (y.p == z) x.p = y;
-            else {
-                this.transplant(y, y.right);
-                y.right = z.right;
-                y.right.p = y;
-            }
-            this.transplant(z, y);
-            y.left = z.left;
-            y.left.p = y;
-            y.color_red = z.color_red;
-        }
+				if (y.p == z) x.p = y;
+				else {
+					this.transplant(y, y.right);
+					y.right = z.right;
+					y.right.p = y;
+				}
+				this.transplant(z, y);
+				y.left = z.left;
+				y.left.p = y;
+				y.color_red = z.color_red;
+			}
 
-        if (!yOriginalcolor_red) this.removeFixup(x);
-    }
+			if (!yOriginalcolor_red) this.removeFixup(x);
+		}
+	}
 
     private void transplant(Node u, Node v) {
         if (u.p == RBTree.nil) this.root = v;
