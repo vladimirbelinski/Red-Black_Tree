@@ -46,12 +46,12 @@ class Main{
 //-------------------------------- REMOTION ------------------------------------------------------------------
 		//t.remove(d); // removes a forced element; 'd' can be replaced for a number
 		//t = t.delete(); // Full deletion of the Red-Black Tree
-		
+
 		// used in a sequential remotion:
 		/*for(int i = 0; i < QTY; i++){
 			t.remove(t.search(i).value);
 		}*/
-		
+
 		t.graph();
 
         total = System.nanoTime() - start;
