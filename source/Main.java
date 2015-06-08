@@ -9,7 +9,7 @@ class Main{
 
     public static void main(String args[]){
 		Random generator = new Random();
-        long start, aux, uma = 0, media_i = 0, media_s= 0, end =0, total;
+        long start, aux, uma = 0, media_i = 0, media_s= 0, media_r= 0, end =0, total;
 
 		RBTree t = new RBTree();
 
@@ -49,8 +49,11 @@ class Main{
 
 		// used in a sequential remotion:
 		/*for(int i = 0; i < QTY; i++){
+			aux = System.nanoTime();
 			t.remove(t.search(i).value);
-		}*/
+			media_r += System.nanoTime() - aux;
+		}
+		media_r /= QTY;*/
 
 		t.graph();
 
@@ -58,7 +61,8 @@ class Main{
 
 		//System.out.printf("Time of the first insertion: %.10f\n", uma/ 10e9);
         //System.out.printf("Time of all insertions: %.10f\n", end/ 10e9);
-		System.out.printf("\nAverage insertion time: %.10f\n", media_i/ 10e9);
+		//System.out.printf("\nAverage removal time: %.10f\n", media_r/ 10e9);
+		System.out.printf("Average insertion time: %.10f\n", media_i/ 10e9);
 		System.out.printf("Average seek time: %.10f\n", media_s/ 10e9);
 		System.out.printf("Total time: %.10f\n", total / 10e9);
     }
